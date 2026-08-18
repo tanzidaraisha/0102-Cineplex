@@ -148,9 +148,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $post_data['total_amount'] = $total_price;
             $post_data['currency'] = "BDT";
             $post_data['tran_id'] = $tran_id;
-            $post_data['success_url'] = "http://localhost/cineplex-ticketing/api/ssl_callback.php";
-            $post_data['fail_url'] = "http://localhost/cineplex-ticketing/api/ssl_callback.php";
-            $post_data['cancel_url'] = "http://localhost/cineplex-ticketing/api/ssl_callback.php";
+            // Dynamically determine the base URL
+            $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http";
+            $host = $_SERVER['HTTP_HOST'];
+            $base_dir = rtrim(str_replace('\\', '/', dirname(dirname($_SERVER['SCRIPT_NAME']))), '/');
+            if ($base_dir === '/') $base_dir = '';
+            $base_url = $protocol . "://" . $host . $base_dir;
+
+            $post_data['success_url'] = $base_url . "/api/ssl_callback.php";
+            $post_data['fail_url'] = $base_url . "/api/ssl_callback.php";
+            $post_data['cancel_url'] = $base_url . "/api/ssl_callback.php";
             
             // Customer Info
             $post_data['cus_name'] = $_SESSION['customer_name'] ?? 'Customer';
